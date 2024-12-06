@@ -64,6 +64,7 @@ import numpy as np
 import os
 import json
 import time
+import gzip
 
 def clean_data(data_df):
     df=data_df.copy()
@@ -147,15 +148,33 @@ def optimize_hyperparameters(pipeline, x_train, y_train):
 
     param_grid = {
         'pca__n_components': [21],
-        'select_k_best__k': [21],
-        'model__C': [2],
+        'select_k_best__k': [12],
+        'model__C': [0.8],
         'model__kernel': ['rbf'],
-        'model__gamma': ['scale'],
+        'model__gamma': [0.1],
         # 'model__class_weight': ['balanced', None]
 
     }
     grid_search = GridSearchCV(pipeline, param_grid, cv=10, scoring='balanced_accuracy', n_jobs=-1, verbose=2)
     grid_search.fit(x_train, y_train)
+
+    # # Access the PCA component from the pipeline
+    # pca = grid_search.best_estimator_.named_steps['pca']
+    # explained_variance_ratio = pca.explained_variance_ratio_
+    
+    # # Print the explained variance ratio for each component
+    # for i, ratio in enumerate(explained_variance_ratio):
+    #     print(f"Principal Component {i+1}: {ratio:.4f} variance explained")
+
+    # # Access the SelectKBest component from the pipeline
+    # select_k_best = grid_search.best_estimator_.named_steps['select_k_best']
+    # scores = select_k_best.scores_
+    # pvalues = select_k_best.pvalues_
+    
+    # # Print the scores and p-values for each feature
+    # for i, (score, pvalue) in enumerate(zip(scores, pvalues)):
+    #     print(f"Feature {i+1}: score={score:.4f}, p-value={pvalue:.4f}")
+
     return grid_search
 
 #
@@ -167,8 +186,8 @@ def save_model(model):
     # If the models directory does not exist, create it
     if not os.path.exists('files/models'):
         os.makedirs('files/models')
-    # Save the model
-    with open('files/models/model.pkl', 'wb') as f:
+    # Save the model using gzip
+    with gzip.open('files/models/model.pkl.gz', 'wb') as f:
         pickle.dump(model, f)
 #
 # Paso 6.
