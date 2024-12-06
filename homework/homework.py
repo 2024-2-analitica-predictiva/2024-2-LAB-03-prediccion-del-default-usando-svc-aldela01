@@ -146,11 +146,13 @@ def optimize_hyperparameters(pipeline, x_train, y_train):
     # }
 
     param_grid = {
-        'pca__n_components': [12, 13],
-        'select_k_best__k': [12, 13],
-        'model__C': [2,3],
-        'model__kernel': ['rbf'], # Linear and rbf kernels are not working with the current dataset
-        'model__gamma': ['scale', 'auto']
+        'pca__n_components': [21],
+        'select_k_best__k': [21],
+        'model__C': [2],
+        'model__kernel': ['rbf'],
+        'model__gamma': ['scale'],
+        # 'model__class_weight': ['balanced', None]
+
     }
     grid_search = GridSearchCV(pipeline, param_grid, cv=10, scoring='balanced_accuracy', n_jobs=-1, verbose=2)
     grid_search.fit(x_train, y_train)
@@ -188,19 +190,19 @@ def calculate_metrics(model, x_train, y_train, x_test, y_test):
     metrics_train = {
         'type': 'metrics',
         'dataset': 'train',
-        'precision': float(round(precision_score(y_train, y_train_pred),4)),
-        'balanced_accuracy': float(round(balanced_accuracy_score(y_train, y_train_pred),4)),
-        'recall': float(round(recall_score(y_train, y_train_pred),4)),
-        'f1_score': float(round(f1_score(y_train, y_train_pred),4))
+        'precision': float(round(precision_score(y_train, y_train_pred),3)),
+        'balanced_accuracy': float(round(balanced_accuracy_score(y_train, y_train_pred),3)),
+        'recall': float(round(recall_score(y_train, y_train_pred),3)),
+        'f1_score': float(round(f1_score(y_train, y_train_pred),3))
     }
 
     metrics_test = {
         'type': 'metrics',
         'dataset': 'test',
-        'precision': float(round(precision_score(y_test, y_test_pred),4)),
-        'balanced_accuracy': float(round(balanced_accuracy_score(y_test, y_test_pred),4)),
-        'recall': float(round(recall_score(y_test, y_test_pred),4)),
-        'f1_score': float(round(f1_score(y_test, y_test_pred),4))
+        'precision': float(round(precision_score(y_test, y_test_pred),3)),
+        'balanced_accuracy': float(round(balanced_accuracy_score(y_test, y_test_pred),3)),
+        'recall': float(round(recall_score(y_test, y_test_pred),3)),
+        'f1_score': float(round(f1_score(y_test, y_test_pred),3))
     }
 
     print(metrics_train)
