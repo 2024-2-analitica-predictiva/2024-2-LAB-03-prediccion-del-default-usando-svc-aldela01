@@ -113,7 +113,8 @@ def create_pipeline(df):
     # Definir los transformadores
     preprocessor = ColumnTransformer(
         transformers=[
-            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
+            ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features),
+            ('num', StandardScaler(), numerical_features)
         ]
     )
 
@@ -121,7 +122,6 @@ def create_pipeline(df):
     pipeline = Pipeline(
         steps=[
             ('preprocessor', preprocessor),
-            ('scaler', StandardScaler()),
             ('pca', PCA()),
             ('select_k_best', SelectKBest(f_classif)),
             ('model', SVC())
@@ -146,12 +146,11 @@ def optimize_hyperparameters(pipeline, x_train, y_train):
     # }
 
     param_grid = {
-        'pca__n_components': [2,4],
-        'select_k_best__k': [2,5],
-        'model__C': [0.01, 0.1],
-        'model__kernel': ['sigmoid', 'poly'], # Linear and rbf kernels are not working with the current dataset
-        'model__degree': [2, 3],
-        # 'model__gamma': ['scale', 'auto']
+        'pca__n_components': [20],
+        'select_k_best__k': [20],
+        'model__C': [1,10,100],
+        'model__kernel': ['linear'], # Linear and rbf kernels are not working with the current dataset
+        'model__gamma': ['scale']
     }
     grid_search = GridSearchCV(pipeline, param_grid, cv=10, scoring='balanced_accuracy', n_jobs=-1, verbose=2)
     grid_search.fit(x_train, y_train)
