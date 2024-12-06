@@ -160,7 +160,8 @@ def optimize_hyperparameters(pipeline, x_train, y_train):
 
 #
 # Paso 5.
-# Guarde el modelo como "files/models/model.pkl".
+# Guarde el modelo (comprimido con gzip) como "files/models/model.pkl.gz".
+# Recuerde que es posible guardar el modelo comprimido usanzo la libreria gzip.
 #
 def save_model(model):
     # If the models directory does not exist, create it
